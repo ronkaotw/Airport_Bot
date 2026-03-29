@@ -10,8 +10,6 @@ const { startLinePlatform } = require('./platform/line');
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const LINE_CHANNEL_SECRET = process.env.LINE_CHANNEL_SECRET;
 const LINE_CHANNEL_ACCESS_TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN;
-
-// middleware
 app.use(express.json({
     verify: (req, res, buf) => {
         req.rawBody = buf;
@@ -22,8 +20,6 @@ morgan.token('from', function(req, res){
     return req.query.from || '-';   
 })
 app.use(morgan('Aaron'));
-
-// app index
 app.get("*", async (req,res) => {
     res.status(200).json({
         "name": pkg.name,

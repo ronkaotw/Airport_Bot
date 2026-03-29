@@ -59,8 +59,6 @@ function startLinePlatform(options) {
 		onMessage,
 		webhookPath = '/webhook/line',
 	} = options;
-
-	// LINE signature verification needs the raw request body bytes.
 	app.post(
 		webhookPath,
 		async (req, res) => {
@@ -75,7 +73,7 @@ function startLinePlatform(options) {
 
 				if (!rawBody) {
 					console.error('[LINE Webhook] raw body missing');
-					res.status(400).json({ ok: false, message: 'raw body missing' });
+					res.status(200).json({ ok: true, ignored: true, reason: 'raw body missing' });
 					return;
 				}
 
@@ -83,11 +81,18 @@ function startLinePlatform(options) {
 				console.log(`[LINE Webhook] signature verification: ${isValid ? 'PASS' : 'FAIL'}`);
 				if (!isValid) {
 					console.error('[LINE Webhook] invalid signature - check if LINE_CHANNEL_SECRET is correct');
-					res.status(401).json({ ok: false, message: 'invalid signature' });
+					res.status(200).json({ ok: true, ignored: true, reason: 'invalid signature' });
 					return;
 				}
 
-				const payload = JSON.parse(rawBody.toString('utf8'));
+				let payload;
+				try {
+					payload = JSON.parse(rawBody.toString('utf8'));
+				} catch (parseError) {
+					console.error('[LINE Webhook] invalid JSON payload', parseError);
+					res.status(200).json({ ok: true, ignored: true, reason: 'invalid json' });
+					return;
+				}
 				const events = Array.isArray(payload.events) ? payload.events : [];
 
 				for (const event of events) {
@@ -95,13 +100,17 @@ function startLinePlatform(options) {
 					if (!context) {
 						continue;
 					}
-					await onMessage(context);
+					try {
+						await onMessage(context);
+					} catch (messageError) {
+						console.error('[LINE Webhook] onMessage failed', messageError);
+					}
 				}
 
 				res.status(200).json({ ok: true });
 			} catch (error) {
 				console.error(error);
-				res.status(500).json({ ok: false, message: 'line webhook failed' });
+				res.status(200).json({ ok: true, ignored: true, reason: 'line webhook failed' });
 			}
 		}
 	);
