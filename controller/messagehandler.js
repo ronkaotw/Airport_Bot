@@ -18,6 +18,20 @@ const DEV_TEXT = `開發人員名稱: Aaron
 開發人員網站: ronkao.tw
 開發人員linkedin: www.linkedin.com/in/aaron-kao884b2319a`;
 
+function getErrorSummary(error) {
+	if (!error) {
+		return 'unknown error';
+	}
+
+	const statusCode = error.response && error.response.statusCode;
+	const errorCode = error.code;
+	const message = error.message || 'unknown error';
+
+	return [statusCode ? `status=${statusCode}` : null, errorCode ? `code=${errorCode}` : null, message]
+		.filter(Boolean)
+		.join(' | ');
+}
+
 function parseCommand(text) {
 	if (!text || !text.startsWith('/')) {
 		return null;
@@ -127,7 +141,7 @@ async function handleMessage(context) {
 			break;
 		}
 	} catch (error) {
-		console.error(error);
+		console.error(`[handleMessage] ${getErrorSummary(error)}`);
 		await reply('查詢失敗，請稍後再試');
 	}
 }
