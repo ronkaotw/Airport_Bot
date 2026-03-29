@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const morgan = require('morgan')
-const PORT = 3000
+const PORT = process.env.PORT || 3000
 const pkg = require('./package.json');
 const { handleMessage } = require('./controller/messagehandler');
 const { startTelegramPlatform } = require('./platform/telegram');
