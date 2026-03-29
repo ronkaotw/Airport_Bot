@@ -17,11 +17,11 @@ app.use(express.json({
         req.rawBody = buf;
     },
 }));
-app.use(morgan('Aaron'));
 morgan.format('Aaron', '[Aaron] :method :url :status');
 morgan.token('from', function(req, res){
     return req.query.from || '-';   
 })
+app.use(morgan('Aaron'));
 
 // app index
 app.get("*", async (req,res) => {
@@ -31,10 +31,14 @@ app.get("*", async (req,res) => {
     })
 })
 
-startTelegramPlatform({
-    token: TELEGRAM_BOT_TOKEN,
-    onMessage: handleMessage,
-});
+if (TELEGRAM_BOT_TOKEN) {
+    startTelegramPlatform({
+        token: TELEGRAM_BOT_TOKEN,
+        onMessage: handleMessage,
+    });
+} else {
+    console.warn('TELEGRAM_BOT_TOKEN 未設定，略過 Telegram 平台啟動');
+}
 
 if (LINE_CHANNEL_SECRET && LINE_CHANNEL_ACCESS_TOKEN) {
     startLinePlatform({
