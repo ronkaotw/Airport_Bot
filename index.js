@@ -36,15 +36,17 @@ if (TELEGRAM_BOT_TOKEN) {
     console.warn('TELEGRAM_BOT_TOKEN 未設定，略過 Telegram 平台啟動');
 }
 
-if (LINE_CHANNEL_SECRET && LINE_CHANNEL_ACCESS_TOKEN) {
-    startLinePlatform({
-        app,
-        channelSecret: LINE_CHANNEL_SECRET,
-        channelAccessToken: LINE_CHANNEL_ACCESS_TOKEN,
-        onMessage: handleMessage,
-        webhookPath: '/webhook/line',
-    });
+if (!LINE_CHANNEL_SECRET || !LINE_CHANNEL_ACCESS_TOKEN) {
+    console.warn('LINE 設定不完整，webhook 仍會啟用以回應 200；請補齊 LINE_CHANNEL_SECRET 與 LINE_CHANNEL_ACCESS_TOKEN');
 }
+
+startLinePlatform({
+    app,
+    channelSecret: LINE_CHANNEL_SECRET,
+    channelAccessToken: LINE_CHANNEL_ACCESS_TOKEN,
+    onMessage: handleMessage,
+    webhookPath: '/webhook/line',
+});
 
 app.listen(PORT, () => {
     console.log(`伺服器啟動在 http://localhost:${PORT}`)
