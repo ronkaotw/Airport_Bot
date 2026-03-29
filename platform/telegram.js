@@ -1,5 +1,13 @@
 const TelegramBot = require('node-telegram-bot-api');
 
+function redactTelegramToken(text) {
+	if (!text) {
+		return text;
+	}
+
+	return String(text).replace(/\/bot\d+:[A-Za-z0-9_-]+/g, '/bot[REDACTED]');
+}
+
 function getTelegramErrorSummary(error) {
 	if (!error) {
 		return 'unknown error';
@@ -7,7 +15,7 @@ function getTelegramErrorSummary(error) {
 
 	const statusCode = error.response && error.response.statusCode;
 	const errorCode = error.code;
-	const message = error.message || 'unknown error';
+	const message = redactTelegramToken(error.message || 'unknown error');
 
 	return [statusCode ? `status=${statusCode}` : null, errorCode ? `code=${errorCode}` : null, message]
 		.filter(Boolean)
@@ -23,16 +31,20 @@ function startTelegramPlatform(options) {
 	});
 
 	bot.on('message', async (msg) => {
-		const chatId = msg.chat.id;
-		const context = {
-			platform: 'telegram',
-			chatId,
-			text: msg.text,
-			rawMessage: msg,
-			reply: (message) => bot.sendMessage(chatId, message),
-		};
+		try {
+			const chatId = msg.chat.id;
+			const context = {
+				platform: 'telegram',
+				chatId,
+				text: msg.text,
+				rawMessage: msg,
+				reply: (message) => bot.sendMessage(chatId, message),
+			};
 
-		await onMessage(context);
+			await onMessage(context);
+		} catch (error) {
+			console.error(`[Telegram message] ${getTelegramErrorSummary(error)}`);
+		}
 	});
 
 	return bot;

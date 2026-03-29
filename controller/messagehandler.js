@@ -142,7 +142,11 @@ async function handleMessage(context) {
 		}
 	} catch (error) {
 		console.error(`[handleMessage] ${getErrorSummary(error)}`);
-		await reply('查詢失敗，請稍後再試');
+		try {
+			await reply('查詢失敗，請稍後再試');
+		} catch (replyError) {
+			console.error(`[handleMessage:reply] ${getErrorSummary(replyError)}`);
+		}
 	}
 }
 
