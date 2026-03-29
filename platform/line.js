@@ -94,6 +94,10 @@ function startLinePlatform(options) {
 					return;
 				}
 				const events = Array.isArray(payload.events) ? payload.events : [];
+				if (events.length === 0) {
+					res.status(200).json({ ok: true, ignored: true, reason: 'no events' });
+					return;
+				}
 
 				for (const event of events) {
 					const context = toLineContext(event, channelAccessToken);
