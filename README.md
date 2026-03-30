@@ -156,7 +156,7 @@ npx nodemon index.js
 ## 聯絡資訊
 
 - 開發者：Aaron
-- GitHub：@uTIstIbL
+- GitHub：@ronkaotw
 - Website：ronkao.tw
 - LinkedIn：www.linkedin.com/in/aaron-kao884b2319a
 
