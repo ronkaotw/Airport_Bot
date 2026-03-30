@@ -158,5 +158,5 @@ npx nodemon index.js
 - 開發者：Aaron
 - GitHub：@ronkaotw
 - Website：ronkao.tw
-- LinkedIn：www.linkedin.com/in/aaron-kao884b2319a
+- LinkedIn：www.linkedin.com/in/ronkaotw
 
