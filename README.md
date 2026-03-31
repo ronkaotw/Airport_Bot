@@ -1,4 +1,4 @@
-# ROC Airport Weather Bot
+# Airy Airport Bot
 
 提供飛航相關天氣查詢的聊天機器人，支援 Telegram 與 LINE。
 
