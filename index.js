@@ -27,6 +27,28 @@ app.get("*", async (req,res) => {
     })
 })
 
+app.post('/webhook', async (req, res) => {
+    try {
+        // ⚠️ 根據你使用的 Bot 平台，你需要將 req.body 包裝成 handleMessage 需要的 context 格式
+        const context = {
+            text: req.body.message?.text || '', // 這裡以 Telegram 為例
+            reply: async (text) => {
+                // 這裡要實作呼叫 Bot API 把訊息發回給使用者的邏輯
+                console.log(`[Bot Reply]: ${text}`);
+            }
+        };
+
+        // 呼叫你的核心邏輯
+        await handleMessage(context);
+        
+        // 成功處理後，務必給 Webhook 平台一個 200 回應
+        res.status(200).send('OK');
+    } catch (err) {
+        console.error('Webhook Error:', err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 if (TELEGRAM_BOT_TOKEN) {
     startTelegramPlatform({
         token: TELEGRAM_BOT_TOKEN,
@@ -48,6 +70,7 @@ startLinePlatform({
     webhookPath: '/webhook/line',
 });
 
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`伺服器啟動在 http://localhost:${PORT}`)
-})
+    console.log(`🚀 Server is listening on port ${PORT}`);
+});
